@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Tracker</title>
+</head>
+<body>
+    <form action="/{{user_id}}/addtracker/" method="POST">
+        <p>Name</p>
+        <input type="text"  name="tracker_name" id="tracker_name">
+        <p>Description</p>
+        <input type="text" name ="tracker_description" id="tracker_description">
+        <p>tracker type</p>
+        <select name="type" id="type">
+            <option value="numerical">Numerical</option>
+            <option value="multi">Multiple choice</option>
+            <option value="boolean">Boolean</option>
+        </select>
+        
+        <input type="submit" name="" value = "add task" id="">
+            
+    </form>
+</body>
+</html>

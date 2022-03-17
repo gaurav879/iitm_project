@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Trackers</title>
+</head>
+<body>
+    <table border="2">
+        <tr>
+            <th>
+                Tracker Name 
+            </th>
+            <th>
+                Tracker Description
+            </th>
+            <th>
+                Tracker Type
+            </th>
+            <th>
+                Delete 
+            </th>
+            <th>
+                Update
+            </th>
+            <th>
+                Add Logs
+            </th>
+            
+        </tr>
+        {% for i in data %}
+        <tr>
+            <td>
+                <a href="/{{id}}/{{i.tracker_id}}/trackerlogs/">{{ i.tracker_name }}</a>
+            </td>
+            <td>
+                {{ i.tracker_description }}
+            </td>
+            <td>
+                {{ i.Tracker_type }}
+            </td>
+            <td>
+                <a href="/{{id}}/{{i.tracker_id}}/deletetracker/"><input type="submit" value="Delete"></a>
+            </td>
+            <td>
+                <a href="/{{id}}/{{i.tracker_id}}/updatetracker"><input type="submit" value="Update"></a>
+                
+            </td>
+            <td>
+                <a href="/{{id}}/{{i.tracker_id}}/addlogs"><input type="submit" value="Add Logs"></a>
+                
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+       
+    
+    <a href="/{{id}}/addtracker"><input type="submit" value = Add Tracker></a>
+    <script>
+    function deleteTracker(){
+
+    }
+    </script>
+</body>
+
+</html>

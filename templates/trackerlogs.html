@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tracker logs</title>
+</head>
+<body>
+    <table border="2">
+        <tr>
+            <th>
+                On
+            </th>
+            <th>
+                value
+            </th>
+            <th>
+                note
+            </th>
+            <th>
+                delete log
+            </th>
+            <th>
+                update log
+            </th>
+        </tr>
+    {% for i in logs%}
+    <tr>
+        <td>
+            {{i.timestamp}}
+        </td>
+        <td>
+            {{i.value}}
+        </td>
+        <td>
+            {{i.note}}
+        </td>
+        <td>
+            <a href="/{{user.user_id}}/{{tracker.tracker_id}}/{{i.id}}/deletelogs/"><input type="submit" value="Delete"></a>
+        </td>
+        <td>
+            <a href="/{{user.user_id}}/{{tracker.tracker_id}}/{{i.id}}/updatelogs/"><input type="submit" value="Update"></a>
+            
+        </td>
+    </tr>
+    {% endfor %}
+    </table>
+</body>
+</html>

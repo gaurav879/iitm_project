@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Logs</title>
+</head>
+<body>
+    <form action="/{{user.user_id}}/{{tracker.tracker_id}}/addlogs/" method="POST">
+        
+        <p>Time</p>
+        <input type="time"  name="time" id="time" >
+        <p>Date</p>
+        <input type="Date" name ="date" id="date">
+        <p>Value</p>
+        <input type="text" name ="value" id="value">
+        <p>Note(anything unusual)</p>
+        <input type="text" name="note" id="note">
+        <br>
+        <br>
+        <input type="submit" name="" value = "add logs" id="">
+            
+    </form>
+</body>
+</html>
