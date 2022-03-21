@@ -1,7 +1,7 @@
 from importlib.resources import Resource
 from sqlite3 import Timestamp
 from flask import Flask, render_template, request, redirect, session, make_response
-
+from matplotlib import pyplot as plt
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Resource, Api
 
@@ -32,8 +32,8 @@ class Tracker(db.Model):
     tracker_user_id = db.Column(
         db.Integer, db.ForeignKey("user.user_id", ondelete="CASCADE"), nullable=False
     )
-    Tracker_type = db.Column(db.String)
-    # Settings = db.Column(db.String)
+    tracker_type = db.Column(db.String)
+    settings = db.Column(db.String)
     pass
 
 
@@ -53,7 +53,7 @@ class Logs(db.Model):
 
 class UserLogin(Resource):
     def get(self):
-        return make_response(render_template("temp.html"))
+        return make_response(render_template("login.html"))
 
     def post(self):
         _username = request.form["username"]
@@ -65,7 +65,7 @@ class UserLogin(Resource):
             if _username == i.username and pw == i.pw:
                 id = i.user_id
                 return redirect(f"/{id}/trackerlist")
-        return "Either username or password wrong"
+        return make_response(render_template("login.html",msg="Either username or password wrong"))  
 
 
 class UserOperations(Resource):
@@ -82,11 +82,11 @@ class UserOperations(Resource):
         _username = request.form["username"]
         temp_user = User.query.all()
         for i in temp_user:
-            if _username == i["username"]:
+            if _username == i.username:
                 return "user already exist"
         db.session.add(new_user)
         db.session.commit()
-        return "user added"
+        return make_response(render_template('login.html',msg="Account created"))
 
 
 class TrackerOperations(Resource):
@@ -95,17 +95,22 @@ class TrackerOperations(Resource):
         for i in temp_user:
             if i.user_id == user_id:
                 temp = i
+                break
         temp_trackers = Tracker.query.filter(
             Tracker.tracker_user_id == temp.user_id
         ).all()
-
-        data = {"data": temp_trackers}
+        temp_logs=[]
+        for i in temp_trackers:
+            templogs=Logs.query.filter(Logs.tracker==i.tracker_id).order_by(Logs.timestamp).all()
+            if(templogs):
+                temp_logs.append(templogs[-1])
+        print(temp_logs)
         return make_response(
             render_template(
                 "tracker_display.html",
+                logs=temp_logs,
                 data=temp_trackers,
-                id=temp.user_id,
-                username=temp.username,
+                user=temp,
             )
         )
 
@@ -119,7 +124,8 @@ class NewTracker(Resource):
             tracker_name=request.form["tracker_name"],
             tracker_description=request.form["tracker_description"],
             tracker_user_id=user_id,
-            Tracker_type=request.form["type"],
+            tracker_type=request.form["type"],
+            settings=request.form["settings"],
         )
         db.session.add(new_tracker)
         db.session.commit()
@@ -143,33 +149,38 @@ class TrackerUpdate(Resource):
 
     def post(self, user_id, tracker_id):
         temp_tracker = Tracker.query.filter(Tracker.tracker_id == tracker_id).first()
-        print(temp_tracker.tracker_name)
-        print(request.form["tracker_name"])
         temp_tracker.tracker_name=request.form["tracker_name"]
         temp_tracker.tracker_description=request.form["tracker_description"]
-        temp_tracker.Tracker_type=request.form["type"]
-        print(temp_tracker.tracker_name)
+        temp_tracker.settings=request.form["settings"]
         db.session.commit()
         return redirect(f"/{user_id}/trackerlist")
 
 
-class AddTracker(Resource):
-    def get(self, user_id, tracker_id):
-        temp_tracker = Tracker.query.filter(Tracker.tracker_id == tracker_id).first()
-        temp_logs = Logs.query.filter(Logs.tracker == tracker_id).all()
-        return make_response(
-            render_template("updatetracker.html", logs=temp_logs,tracker_name=temp_tracker.tracker_name, user_id=user_id)
-        )
+# class AddTracker(Resource):
+#     def get(self, user_id, tracker_id):
+#         temp_tracker = Tracker.query.filter(Tracker.tracker_id == tracker_id).first()
+#         temp_logs = Logs.query.filter(Logs.tracker == tracker_id).all()
+#         return make_response(
+#             render_template("updatetracker.html", logs=temp_logs,tracker_name=temp_tracker.tracker_name, user_id=user_id)
+#         )
 
 
 class TrackerLogs(Resource):
     def get(self, user_id, tracker_id):
         temp_user=User.query.filter(User.user_id==user_id).first()
         temp_tracker = Tracker.query.filter(Tracker.tracker_id == tracker_id).first()
+        value_list=[]
         logs=Logs.query.filter(Logs.tracker==tracker_id).order_by(Logs.timestamp).all()
-
+        for i in logs:
+            value_list.append(i.value)
+        if(temp_tracker.tracker_type=="numerical" or temp_tracker.tracker_type=="boolean"):
+            print("000")
+            plt.hist(value_list)
+            plt.ylabel("Frequency")
+            plt.xlabel("Marks")
+            plt.savefig("./static/histo.png")
         return make_response(
-            render_template("trackerlogs.html", tracker=temp_tracker, user=temp_user,logs=logs)
+            render_template("trackerlogs.html", tracker=temp_tracker, user=temp_user,logs=logs,)
         )
 
 
@@ -178,13 +189,11 @@ class AddLogs(Resource):
         temp_user=User.query.filter(User.user_id == user_id).first()
         
         temp_tracker = Tracker.query.filter(Tracker.tracker_id == tracker_id).first()
-        print(temp_tracker)
         return make_response(
             render_template("addlogs.html", tracker=temp_tracker, user=temp_user)
         )
 
     def post(self,user_id,tracker_id):
-        print("00")
         new_log=Logs(timestamp=str(request.form["date"]+" "+request.form["time"]),tracker=tracker_id,value=request.form["value"],note=request.form["note"])
         db.session.add(new_log)
         db.session.commit()
@@ -200,22 +209,18 @@ class DeleteLogs(Resource):
 
 
 class UpdateLogs(Resource):
-    def get(self, user_id, tracker_id):
+    def get(self, user_id, tracker_id,id):
         temp_tracker = Tracker.query.filter(Tracker.tracker_id == tracker_id).first()
+        temp_logs = Logs.query.filter(Logs.id == id).first()
         return make_response(
-            render_template("updatetracker.html", tracker=temp_tracker, user_id=user_id)
+            render_template("updatelogs.html", tracker=temp_tracker, user_id=user_id,logs=temp_logs,time=temp_logs.timestamp.split(" ")[1])
         )
 
     def post(self, user_id, tracker_id,id):
         temp_logs = Logs.query.filter(Logs.id == id).first()
-        db.session.delete(temp_logs)
-        new_log = Logs(
-            On=str(request.form["date"]+" "+request.form["time"]), 
-            tracker=tracker_id,
-            value=request.form["note"],
-            note=request.form["note"],
-        )
-        db.session.add(new_log)
+        temp_logs.timestamp=str(request.form["date"]+" "+request.form["time"])
+        temp_logs.value=request.form["value"]
+        temp_logs.note=request.form["note"]
         db.session.commit()
         return redirect(f"/{user_id}/{tracker_id}/trackerlogs")
 
@@ -226,7 +231,6 @@ api.add_resource(TrackerDeletion, "/<int:user_id>/<int:tracker_id>/deletetracker
 api.add_resource(NewTracker, "/<int:user_id>/addtracker/")
 api.add_resource(UserLogin, "/")
 api.add_resource(UserOperations, "/signup")
-api.add_resource(AddTracker,"/<int:user_id>/<int:tracker_id>/addtracker/")
 api.add_resource(TrackerLogs, "/<int:user_id>/<int:tracker_id>/trackerlogs/")
 api.add_resource(AddLogs, "/<int:user_id>/<int:tracker_id>/addlogs/")
 api.add_resource(DeleteLogs, "/<int:user_id>/<int:tracker_id>/<int:id>/deletelogs/")

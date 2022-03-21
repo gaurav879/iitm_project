@@ -7,13 +7,20 @@
     <title>Tracker logs</title>
 </head>
 <body>
+    <h2>
+        Tracker Name : {{tracker.tracker_name}}
+    </h2>
+    {% if tracker.tracker_type == "numerical" or tracker.tracker_type == "boolean" %}
+    <img src="{{url_for('static', filename='histo.png')}}" width="450" height="450" alt="22">
+    
+    {% endif %}
     <table border="2">
         <tr>
             <th>
                 On
             </th>
             <th>
-                value
+                value  ({{tracker.tracker_type}})
             </th>
             <th>
                 note
@@ -46,5 +53,7 @@
     </tr>
     {% endfor %}
     </table>
+    <br>
+    <a href="http://127.0.0.1:5000/{{user.user_id}}/{{tracker.tracker_id}}/addlogs/"><button>Add logs</button></a>
 </body>
 </html>

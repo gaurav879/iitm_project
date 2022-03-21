@@ -7,6 +7,8 @@
     <title>Your Trackers</title>
 </head>
 <body>
+    <h2>Hey {{user.username}}!!</h2>
+    <h4>Here are your trackers</h4>
     <table border="2">
         <tr>
             <th>
@@ -17,6 +19,9 @@
             </th>
             <th>
                 Tracker Type
+            </th>
+            <th>
+                Settings
             </th>
             <th>
                 Delete 
@@ -32,23 +37,26 @@
         {% for i in data %}
         <tr>
             <td>
-                <a href="/{{id}}/{{i.tracker_id}}/trackerlogs/">{{ i.tracker_name }}</a>
+                <a href="/{{user.user_id}}/{{i.tracker_id}}/trackerlogs/">{{ i.tracker_name }}</a>
             </td>
             <td>
                 {{ i.tracker_description }}
             </td>
             <td>
-                {{ i.Tracker_type }}
+                {{ i.tracker_type }}
             </td>
             <td>
-                <a href="/{{id}}/{{i.tracker_id}}/deletetracker/"><input type="submit" value="Delete"></a>
+                {{ i.settings }}
             </td>
             <td>
-                <a href="/{{id}}/{{i.tracker_id}}/updatetracker"><input type="submit" value="Update"></a>
+                <a href="/{{user.user_id}}/{{i.tracker_id}}/deletetracker/"><input type="submit" value="Delete"></a>
+            </td>
+            <td>
+                <a href="/{{user.user_id}}/{{i.tracker_id}}/updatetracker"><input type="submit" value="Update"></a>
                 
             </td>
             <td>
-                <a href="/{{id}}/{{i.tracker_id}}/addlogs"><input type="submit" value="Add Logs"></a>
+                <a href="/{{user.user_id}}/{{i.tracker_id}}/addlogs"><input type="submit" value="Add Logs"></a>
                 
             </td>
         </tr>
@@ -56,13 +64,9 @@
     </table>
     
        
-    
-    <a href="/{{id}}/addtracker"><input type="submit" value = Add Tracker></a>
-    <script>
-    function deleteTracker(){
-
-    }
-    </script>
+    <br>
+    <a href="/{{user.user_id}}/addtracker"><input type="submit" value = "Add Tracker"></a>
+    <a href="/"><button>LOGOUT</button></a>
 </body>
 
 </html>

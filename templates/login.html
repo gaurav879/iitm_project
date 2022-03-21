@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        Login
+    </title>
+    
+</head>
+
+<body>
+    <h1>QuantifiedSelf</h1>
+    <p>Track and measure yourself</p>
+    <div>
+
+    
+    {% if msg %}
+    <h4 style="color: red;">{{msg}}</h4>
+    {% endif %}
+    <form action="/" method="POST">
+        <label>Username:</label>
+        <input type="text" name="username" method="POST" id="username">
+        <br>
+        <label>Password:</label>
+        <input type="password" name="_password" id="_password">
+        <br>
+        <br>
+        <input type="submit"  value="Login">
+    </form>
+    <br>
+    <a href="/signup"><input type="submit"  value="Signup"></a>
+</div>
+</body>
+
+</html>

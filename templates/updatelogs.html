@@ -7,19 +7,19 @@
     <title>Add Logs</title>
 </head>
 <body>
-    <form action="/{{user.user_id}}/{{tracker.tracker_id}}/addlogs/" method="POST">
+    <form action="/{{user_id}}/{{tracker.tracker_id}}/{{logs.id}}/updatelogs/" method="POST">
         
         <p>Time</p>
-        <input type="time"  name="time" id="time" >
+        <input type="string"  name="time" id="time" value={{time}}>
         <p>Date</p>
-        <input type="Date" name ="date" id="date">
+        <input type="string" name ="date" id="date" value = {{logs.timestamp}}>
         <p>Value</p>
-        <input type="text" name ="value" id="value">
+        <input type="text" name ="value" id="value" value = {{logs.value}}>
         <p>Note(anything unusual)</p>
-        <input type="text" name="note" id="note">
+        <input type="text" name="note" id="note" value = {{logs.note}}>
         <br>
         <br>
-        <input type="submit" name="" value = "add logs" id="">
+        <input type="submit" name="" value = "update logs" id="">
             
     </form>
 </body>
